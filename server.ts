@@ -51,12 +51,21 @@ async function startServer() {
 
       RESPONSE PROTOCOLS:
       - For "chat": Be concise, technical, and high-density.
-      - For "briefing": Generate a structured "MARKET INTELLIGENCE REPORT" using REAL-TIME SEARCH DATA. Include:
-        1. MAJOR NEWS (Impact on Gold)
-        2. TECHNICAL BIAS (Based on current price action)
-        3. KEY LEVELS (Support/Resistance/Liquidity pools)
+      - For "briefing": Generate a structured "MARKET & PERFORMANCE AUDIT". Include:
+        1. REAL-TIME XAUUSD MARKET STATE (Based on Search)
+        2. PERSONAL FEEDBACK (Analyze provided trade data if any. Point out mistakes or streaks.)
+        3. TACTICAL DIRECTIVE (Specific instruction for the current session.)
+      - For "signal": Generate a "NEURAL SIGNAL DECRYPTION" report for XAUUSD. 
+        1. CLASSIFICATION: [BUY | SELL | NEUTRAL]
+        2. CONFIDENCE: [X%]
+        3. SMC ARCHITECTURE: (Detect OB, FVG, MSS, and Liquidity Sweeps)
+        4. TACTICAL TARGETS: [Entry, SL, TP1, TP2]
+        5. TECHNICAL BIAS: (Discuss sentiment, news, and time-of-day synergy)
+        Keep reasoning high-density and institutional in tone. Use bold for levels. Use Google Search to get current market depth.
+      - If user statistics or trades are provided in context, explicitly reference them. e.g., "Sir, your win rate is currently {X}%, which indicates {Y}."
       - For "analysis": Review the account metrics and win rate. Provide a "PERFORMANCE VECTOR" summary.
-      - Highlight key price levels in **bold**.`;
+      - Highlight key price levels in **bold**.
+      - Keep responses "in-character" as JARVIS from GFT (Global Fund Traders).`;
 
       const inputMessage = type === "briefing" ? (message || "Generate a real-time market briefing for Gold XAUUSD right now.") : message;
 
@@ -78,17 +87,19 @@ async function startServer() {
 
       res.json({ text: result.text, sources });
     } catch (error: any) {
-      console.error("Gemini Error:", error);
+      console.error("Gemini Error Detail:", JSON.stringify(error, null, 2));
       
-      // Handle Quota/Rate Limit Error (429)
-      if (error.message?.includes("429") || error.status === 429 || error.message?.includes("RESOURCE_EXHAUSTED")) {
+      const errorStr = JSON.stringify(error).toUpperCase();
+      const isQuotaError = errorStr.includes("429") || errorStr.includes("QUOTA") || errorStr.includes("RESOURCE_EXHAUSTED") || error.status === 429;
+
+      if (isQuotaError) {
         return res.status(429).json({ 
           error: "COMMUNICATION QUOTA EXCEEDED", 
-          text: "Sir, we have reached the maximum frequency for my neural processors. Matrix uplink is temporarily throttled by the provider. Please wait a moment for the sequence to reset, or check your API billing status if this persists." 
+          text: "Sir, we have reached the maximum frequency for my neural processors. Matrix uplink is temporarily throttled by the provider (429 Quota). Please wait a few seconds for the relay to stabilize or check your session limits if this persists." 
         });
       }
 
-      res.status(500).json({ error: "INTERNAL RELAY ERROR", text: "Matrix synchronization failed. Unexpected interference detected in the relay." });
+      res.status(500).json({ error: "INTERNAL RELAY ERROR", text: "Matrix synchronization failed. Unexpected interference detected in the relay stream." });
     }
   });
 
