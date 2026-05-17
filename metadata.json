@@ -1,0 +1,8 @@
+{
+  "name": "JARVIS v2.0 Trading Assistant",
+  "description": "A sophisticated AI trading assistant featuring Market Intelligence reports, SMC analysis, and real-time GFT challenge monitoring.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
